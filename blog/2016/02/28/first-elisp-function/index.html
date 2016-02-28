@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <title>First Elisp Function - pschorf&#39;s blog</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Paul Schorfheide" />
+        <meta name="description" content="Writing my first Emacs Lisp" />
+        <meta name="keywords" content="emacs, lisp" />
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <style type="text/css"></style>
+</head>
+
+  <body class="container">
+    <nav class="main-nav">
+        <a href="/blog">Archive</a>
+        <a href="/tags">Tag</a>
+        <a href="/about/">About</a>
+        <a class="cta" href="http://github.com/pschorf">GitHub</a>
+    </nav>
+
+<div>
+    <section id="wrapper">
+        <article class="post">
+            <header>
+                    <h1>First Elisp Function</h1>
+            </header>
+            <br />
+            <section id="post-body">
+                
+<div id="outline-container-orgheadline1" class="outline-2">
+<h2 id="orgheadline1">org-store-link</h2>
+<div class="outline-text-2" id="text-orgheadline1">
+<p>
+I use org-capture to keep track of my to-do list, and recently started integrating with mu4e for keeping track of
+emails. I cribbed a capture template like
+</p>
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(setq org-capture-templates '(("t" "todo" entry (file+headline "~/todo.org" "Tasks")
+                                        "* TODO [#A] %?
+ SCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\")) %a")))
+</pre>
+</div>
+<p>
+which uses the "%a" format to store a link to the current file. I had some issues with it occasionally
+throwing an error when run in mu4e, however, and found the links often were not useful in other files,
+since I usually use org-capture to enter a quick to-do item when interrupted working on another task.
+First, I wrote a second template which had a link but still ran into occasional mu4e issues, so I decided to write
+an elisp function for opening a capture with a link to the current file:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(defun org-capture-link ()
+    "Capture with a link"
+    (interactive)
+    (org-store-link (buffer-file-name))
+    (org-capture nil "t")
+    (let ((link (plist-get org-store-link-plist ':annotation)))
+      (save-excursion
+        (newline)
+        (insert link))))
+</pre>
+</div>
+<p>
+Luckily, org-store-link keeps the link in a plist, so it was straightforward to pull out the link and insert it
+in the capture buffer. I was surprised how straightforward the entire process was.
+</p>
+</div>
+</div>
+
+            </section>
+    </section>
+</div>
+
+    <div>
+    <section id="wrapper">
+      <div class="post-meta">
+        <span title="post date" class="post-info">2016-02-28</span>
+        <span title="tags" class="post-info"><a href="/tags/emacs/">emacs</a>, <a href="/tags/programming/">programming</a></span>
+      </div>
+      <br />
+      <br />
+      <section>
+        <h1>Comments</h1>
+      </section>
+      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="/media/js/main.js"></script>
+      <div align="center">
+      <footer id="footer">
+        <p class="small">
+          Copyright &copy; 2012 - <span id="footerYear"></span> <a href="mailto:pschorf2 &lt;at&gt; gmail &lt;dot&gt; com">Paul Schorfheide</a>
+          &nbsp;&nbsp;-&nbsp;&nbsp;
+          Powered by <a href="https://github.com/kelvinh/org-page" target="_blank">org-page</a>
+          <script type="text/javascript">document.getElementById("footerYear").innerHTML = (new Date()).getFullYear();</script>
+        </p>
+        <br />
+      </footer>
+      </div>
+      </section>
+    </div>
+
+  </body>
+</html>
