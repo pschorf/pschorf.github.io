@@ -1,0 +1,88 @@
+#+TITLE: Blogging in Spacemacs
+#+AUTHOR: Paul Schorfheide
+#+EMAIL: pschorf2@gmail.com
+#+LANGUAGE: en
+#+OPTIONS: H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+URI: /blog/%y/%m/%d/spacemacs-blogging
+#+DATE: 2016-02-28
+#+TAGS: emacs, blogging
+#+DESCRIPTION: Blogging with Spacemacs
+
+* Blogging in Emacs
+I saw a link yesterday in the [[https://twitter.com/emacs][Emacs twitter account]] for a new mode for managing
+blog entries, [[https://github.com/CodeFalling/blog-admin][blog-admin-mode]]. I was interested in trying it out, and had been
+putting off blogging for years so decided to give it a shot. I initially set up
+an org-mode based static content generator called [[https://github.com/kelvinh/org-page][org-page]]. 
+** How it works
+org-page creates a new git repository, with the master containing the static
+html content suitable for display with Github pages, and a "source" branch
+containing the org files to generate the html. It provides several useful
+functions to generate, commit, and push the html. The workflow is very simple.
+1. Create a new org file with a common header in /blog
+2. Edit the content
+3. op/do-publication to publish the blog with git
+blog-admin adds a nice layer on top to keep track of the various blog posts, and
+supports unpublished drafts. They have an awesome GIF on their Github page
+describing how it works. It's super handy when integrated with evil-mode to
+find entries, toggle them for publication, and create new ones. I'm a big
+believer in minimum friction to start a project, so a handy shortcut to create
+new blog entries is awesome.
+** Spacemacs configuration
+Since I use [[https://github.com/syl20bnr/spacemacs][Spacemacs]], I decided to set up a new layer to configure org-page:
+#+begin_src emacs-lisp
+(defun org-page/init-org-page ()
+  (spacemacs/declare-prefix "ab" "blog")
+  (use-package org-page
+    :config (progn (setq op/repository-directory "~/src/blog"
+                         op/site-main-title "pschorf's blog"
+                         op/site-sub-title "A work in progress"
+                         op/site-domain "https://pschorf.github.io"
+                         op/theme-root-directory "~/src/"
+                         op/theme 'org-page-theme-kactus
+                         op/personal-github-link "http://github.com/pschorf"
+                         op/personal-google-analytics-id "UA-74427262-1")
+                   (spacemacs/set-leader-keys
+                     "abp" 'op/do-publication-and-preview-site
+                     "abP" 'op/do-publication))))
+#+end_src
+This sets up several basic configuration options for org-page like:
+- Repository for the blog's source code
+- Title
+- Google Analytics
+It also binds two keys, for preview and publishing, under <spc> a b (for
+app/blog) in Spacemacs. This was enough to get started and publish a first post.
+Then, it was time to configure blog-admin to keep track of blog entries and
+quickly create new ones. I used the existing layer and added a new function:
+#+begin_src emacs-lisp
+(defun org-page/init-blog-admin ()
+  (use-package blog-admin
+    :config (progn (setq blog-admin-backend-type 'org-page
+                         blog-admin-backend-path "~/src/blog"
+                         blog-admin-backend-new-post-in-drafts t
+                         blog-admin-backend-new-post-with-same-name-dir t
+                         blog-admin-backend-org-page-drafts "_drafts")
+                   (evilified-state-evilify-map blog-admin-mode-map
+                     :mode blog-admin-mode)
+                   (spacemacs/set-leader-keys
+                     "abb" 'blog-admin-start)
+                   (setq blog-admin-backend-org-page-template-org-post
+                         "#+TITLE: %s
+#+AUTHOR: Paul Schorfheide
+#+EMAIL: pschorf2@gmail.com
+#+LANGUAGE: en
+#+OPTIONS: H:3 num:nil toc:nil \\n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+URI: /blog/%%y/%%m/%%d/
+#+DATE: %s
+#+TAGS:
+#+DESCRIPTON:
+"))))
+#+end_src
+This is slightly more complicated than the previous entry. First, I configure
+blog-admin based on their documentation. Since it contains a major mode with
+some keyboard navigation, I call evilified-state-evilify-map to set it up for
+evil-mode, and set up the spacemacs keys. Finally, I create a more fleshed-out
+template for new posts. If I have some time, I'd like to customize the way that
+it formats the template to support more complicated replacement (like completing
+the uri.)
+
+The source code for the layer is available in my [[https://github.com/pschorf/spacemacs-layers][github repo]].
