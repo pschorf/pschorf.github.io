@@ -1,0 +1,12 @@
+#+TITLE:       First Elisp Function
+#+AUTHOR:      Paul Schorfheide
+#+EMAIL:       pschorf2@gmail.com
+#+DATE:        2016-02-28 Sun
+#+URI:         /blog/%y/%m/%d/first-elisp-function
+#+KEYWORDS:    emacs, lisp
+#+TAGS:        emacs, programming
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+DESCRIPTION: Writing my first Emacs Lisp
+
+* This is a test post
