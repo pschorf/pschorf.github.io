@@ -10,7 +10,7 @@
 #+DESCRIPTION: Writing my first Emacs Lisp
 
 * org-store-link
-I use org-capture to keep track of my to-do list, and recently started integrating with mu4e for keeping track of
+I use [[http://orgmode.org/manual/Capture.html][org-capture]] to keep track of my to-do list, and recently started integrating with mu4e for keeping track of
 emails. I cribbed a capture template like
 #+begin_src emacs-lisp
   (setq org-capture-templates '(("t" "todo" entry (file+headline "~/todo.org" "Tasks")
@@ -18,7 +18,7 @@ emails. I cribbed a capture template like
    SCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\")) %a")))
 #+end_src
 which uses the "%a" format to store a link to the current file. I had some issues with it occasionally
-throwing an error when run in mu4e, however, and found the links often were not useful in other files,
+throwing an error when run in [[http://www.djcbsoftware.nl/code/mu/mu4e.html][mu4e]], however, and found the links often were not useful in other files,
 since I usually use org-capture to enter a quick to-do item when interrupted working on another task.
 First, I wrote a second template which had a link but still ran into occasional mu4e issues, so I decided to write
 an elisp function for opening a capture with a link to the current file:
