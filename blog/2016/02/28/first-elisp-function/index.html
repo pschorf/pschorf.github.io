@@ -32,7 +32,7 @@
 <h2 id="orgheadline1">org-store-link</h2>
 <div class="outline-text-2" id="text-orgheadline1">
 <p>
-I use org-capture to keep track of my to-do list, and recently started integrating with mu4e for keeping track of
+I use <a href="http://orgmode.org/manual/Capture.html">org-capture</a> to keep track of my to-do list, and recently started integrating with mu4e for keeping track of
 emails. I cribbed a capture template like
 </p>
 <div class="org-src-container">
@@ -44,7 +44,7 @@ emails. I cribbed a capture template like
 </div>
 <p>
 which uses the "%a" format to store a link to the current file. I had some issues with it occasionally
-throwing an error when run in mu4e, however, and found the links often were not useful in other files,
+throwing an error when run in <a href="http://www.djcbsoftware.nl/code/mu/mu4e.html">mu4e</a>, however, and found the links often were not useful in other files,
 since I usually use org-capture to enter a quick to-do item when interrupted working on another task.
 First, I wrote a second template which had a link but still ran into occasional mu4e issues, so I decided to write
 an elisp function for opening a capture with a link to the current file:
