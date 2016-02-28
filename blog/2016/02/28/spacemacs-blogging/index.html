@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <title>Blogging in Spacemacs - pschorf&#39;s blog</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Paul Schorfheide" />
+        <meta name="description" content="Blogging with Spacemacs" />
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <style type="text/css"></style>
+</head>
+
+  <body class="container">
+    <nav class="main-nav">
+        <a href="/blog">Archive</a>
+        <a href="/tags">Tag</a>
+        <a href="/about/">About</a>
+        <a class="cta" href="http://github.com/pschorf">GitHub</a>
+    </nav>
+
+<div>
+    <section id="wrapper">
+        <article class="post">
+            <header>
+                    <h1>Blogging in Spacemacs</h1>
+            </header>
+            <br />
+            <section id="post-body">
+                
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">Blogging in Emacs</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+I saw a link yesterday in the <a href="https://twitter.com/emacs">Emacs twitter account</a> for a new mode for managing
+blog entries, <a href="https://github.com/CodeFalling/blog-admin">blog-admin-mode</a>. I was interested in trying it out, and had been
+putting off blogging for years so decided to give it a shot. I initially set up
+an org-mode based static content generator called <a href="https://github.com/kelvinh/org-page">org-page</a>. 
+</p>
+</div>
+<div id="outline-container-sec-1-1" class="outline-3">
+<h3 id="sec-1-1">How it works</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+org-page creates a new git repository, with the master containing the static
+html content suitable for display with Github pages, and a "source" branch
+containing the org files to generate the html. It provides several useful
+functions to generate, commit, and push the html. The workflow is very simple.
+</p>
+<ol class="org-ol">
+<li>Create a new org file with a common header in /blog
+</li>
+<li>Edit the content
+</li>
+<li>op/do-publication to publish the blog with git
+</li>
+</ol>
+<p>
+blog-admin adds a nice layer on top to keep track of the various blog posts, and
+supports unpublished drafts. They have an awesome GIF on their Github page
+describing how it works. It's super handy when integrated with evil-mode to
+find entries, toggle them for publication, and create new ones. I'm a big
+believer in minimum friction to start a project, so a handy shortcut to create
+new blog entries is awesome.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-2" class="outline-3">
+<h3 id="sec-1-2">Spacemacs configuration</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+Since I use <a href="https://github.com/syl20bnr/spacemacs">Spacemacs</a>, I decided to set up a new layer to configure org-page:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(defun org-page/init-org-page ()
+  (spacemacs/declare-prefix "ab" "blog")
+  (use-package org-page
+    :config (progn (setq op/repository-directory "~/src/blog"
+                         op/site-main-title "pschorf's blog"
+                         op/site-sub-title "A work in progress"
+                         op/site-domain "https://pschorf.github.io"
+                         op/theme-root-directory "~/src/"
+                         op/theme 'org-page-theme-kactus
+                         op/personal-github-link "http://github.com/pschorf"
+                         op/personal-google-analytics-id "UA-74427262-1")
+                   (spacemacs/set-leader-keys
+                     "abp" 'op/do-publication-and-preview-site
+                     "abP" 'op/do-publication))))
+</pre>
+</div>
+<p>
+This sets up several basic configuration options for org-page like:
+</p>
+<ul class="org-ul">
+<li>Repository for the blog's source code
+</li>
+<li>Title
+</li>
+<li>Google Analytics
+</li>
+</ul>
+<p>
+It also binds two keys, for preview and publishing, under &lt;spc&gt; a b (for
+app/blog) in Spacemacs. This was enough to get started and publish a first post.
+Then, it was time to configure blog-admin to keep track of blog entries and
+quickly create new ones. I used the existing layer and added a new function:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(defun org-page/init-blog-admin ()
+  (use-package blog-admin
+    :config (progn (setq blog-admin-backend-type 'org-page
+                         blog-admin-backend-path "~/src/blog"
+                         blog-admin-backend-new-post-in-drafts t
+                         blog-admin-backend-new-post-with-same-name-dir t
+                         blog-admin-backend-org-page-drafts "_drafts")
+                   (evilified-state-evilify-map blog-admin-mode-map
+                     :mode blog-admin-mode)
+                   (spacemacs/set-leader-keys
+                     "abb" 'blog-admin-start)
+                   (setq blog-admin-backend-org-page-template-org-post
+                         "#+TITLE: %s
+#+AUTHOR: Paul Schorfheide
+#+EMAIL: pschorf2@gmail.com
+#+LANGUAGE: en
+#+OPTIONS: H:3 num:nil toc:nil \\n:nil ::t |:t ^:nil -:nil f:t *:t &lt;:t
+#+URI: /blog/%%y/%%m/%%d/
+#+DATE: %s
+#+TAGS:
+#+DESCRIPTON:
+"))))
+</pre>
+</div>
+<p>
+This is slightly more complicated than the previous entry. First, I configure
+blog-admin based on their documentation. Since it contains a major mode with
+some keyboard navigation, I call evilified-state-evilify-map to set it up for
+evil-mode, and set up the spacemacs keys. Finally, I create a more fleshed-out
+template for new posts. If I have some time, I'd like to customize the way that
+it formats the template to support more complicated replacement (like completing
+the uri.)
+</p>
+</div>
+</div>
+</div>
+
+            </section>
+    </section>
+</div>
+
+    <div>
+    <section id="wrapper">
+      <div class="post-meta">
+        <span title="post date" class="post-info">2016-02-28</span>
+        <span title="tags" class="post-info"><a href="/tags/emacs/">emacs</a>, <a href="/tags/blogging/">blogging</a></span>
+      </div>
+      <br />
+      <br />
+      <section>
+      </section>
+      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="/media/js/main.js"></script>
+      <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-74427262-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+      </script>
+      <div align="center">
+      <footer id="footer">
+        <p class="small">
+          Copyright &copy; 2012 - <span id="footerYear"></span> <a href="mailto:pschorf2 &lt;at&gt; gmail &lt;dot&gt; com">Paul Schorfheide</a>
+          &nbsp;&nbsp;-&nbsp;&nbsp;
+          Powered by <a href="https://github.com/kelvinh/org-page" target="_blank">org-page</a>
+          <script type="text/javascript">document.getElementById("footerYear").innerHTML = (new Date()).getFullYear();</script>
+        </p>
+        <br />
+      </footer>
+      </div>
+      </section>
+    </div>
+
+  </body>
+</html>
