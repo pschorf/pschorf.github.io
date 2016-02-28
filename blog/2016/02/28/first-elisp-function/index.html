@@ -28,12 +28,20 @@
             <br />
             <section id="post-body">
                 
-<div id="outline-container-orgheadline1" class="outline-2">
-<h2 id="orgheadline1">org-store-link</h2>
-<div class="outline-text-2" id="text-orgheadline1">
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">org-store-link</h2>
+<div class="outline-text-2" id="text-1">
 <p>
-I use <a href="http://orgmode.org/manual/Capture.html">org-capture</a> to keep track of my to-do list, and recently started integrating with mu4e for keeping track of
-emails. I cribbed a capture template like
+During the last year, I started noticing that I had a problem keeping track of
+tasks that came up during phone calls and emails. I used my inbox as a to-do
+list, but I had over 100 emails in it and no idea what was urgent, what was
+done, and what was still to-do. I tried to move down to "Inbox Zero," but
+had trouble capturing long-term items that needed more time to respond or were
+scheduled for a future date. I found John Wiegley's excellent guide for how he
+implemented a GTD strategy with org-mode (link seems to be down.) This was
+great for handling the tasks, but in my quest to move more of my workflow into
+Emacs I decided to start reading my mail in Emacs with <a href="http://www.djcbsoftware.nl/code/mu/mu4e.html">mu4e</a>. I started by
+updating my <a href="http://orgmode.org/manual/Capture.html">org-capture</a> todo template to:
 </p>
 <div class="org-src-container">
 
@@ -43,11 +51,15 @@ emails. I cribbed a capture template like
 </pre>
 </div>
 <p>
-which uses the "%a" format to store a link to the current file. I had some issues with it occasionally
-throwing an error when run in <a href="http://www.djcbsoftware.nl/code/mu/mu4e.html">mu4e</a>, however, and found the links often were not useful in other files,
-since I usually use org-capture to enter a quick to-do item when interrupted working on another task.
-First, I wrote a second template which had a link but still ran into occasional mu4e issues, so I decided to write
-an elisp function for opening a capture with a link to the current file:
+which uses the "%a" format to store a link to the current file. This works great
+with mu4e since the file link points back to the original email so the full
+context is available when you start working on the task. I had some issues with
+it occasionally throwing an error when run in mu4e, however, and found the links often
+were not useful in other files since I usually use org-capture to enter a quick
+to-do item when interrupted working on another task. First, I wrote a second
+template which had a link but still ran into occasional mu4e issues, so I
+decided to write an elisp function for opening a capture with a link to the
+current file:
 </p>
 <div class="org-src-container">
 
@@ -63,8 +75,27 @@ an elisp function for opening a capture with a link to the current file:
 </pre>
 </div>
 <p>
-Luckily, org-store-link keeps the link in a plist, so it was straightforward to pull out the link and insert it
-in the capture buffer. I was surprised how straightforward the entire process was.
+This almost exactly does what I used to do by hand. Line by line:
+</p>
+<ul class="org-ul">
+<li>interactive: tells Emacs this can be called via M-x
+</li>
+<li>org-store-link: pushes a link to the current buffer
+</li>
+<li>(org-capture nil "t"): opens the capture template with key "t"
+</li>
+<li>org-store-link-plist: variable where org stores the link captured
+</li>
+<li>save-excursion: Emacs macro to save the current buffer and point
+</li>
+<li>newline, insert: add the link to the file
+</li>
+</ul>
+
+<p>
+It's a fairly trivial function, but I was really surprised how easy it was to
+get up and running with Emacs lisp, and how similar it was to the workflow I
+used to do by hand.
 </p>
 </div>
 </div>
@@ -82,6 +113,7 @@ in the capture buffer. I was surprised how straightforward the entire process wa
       <br />
       <br />
       <section>
+        <h1>Comments</h1>
       </section>
       <script src="http://code.jquery.com/jquery-latest.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.js"></script>
